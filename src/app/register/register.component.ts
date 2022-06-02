@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 
@@ -14,9 +14,9 @@ export class RegisterComponent implements OnInit {
   pswd=""
   //form group
   registerForm = this.fb.group({
-    acno:'',
-    pswd:'',
-    uname:''
+    acno:[''],
+    pswd:[''],
+    uname:['',[Validators.required,Validators.pattern('[a-zA-Z ]*')]]
   })
 
   constructor(private ds:DataService,private router:Router,private fb:FormBuilder) { }
@@ -24,17 +24,26 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
   }
   register(){
-    var uname=this.uname
-    var acno=this.acno
-    var pswd=this.pswd
-   const result= this.ds.register(uname,acno,pswd)
+    var uname=this.registerForm.value.uname
+    var acno=this.registerForm.value.acno
+    var pswd=this.registerForm.value.pswd
+  if(this.registerForm.valid){
+    const result= this.ds.register(uname,acno,pswd)
+
    if (result){
-     alert("successfully Registered")
-     this.router.navigateByUrl("")
-   }
-   else{
-     alert("already existing customer...please login !!!")
-   }
+    alert("successfully Registered")
+    this.router.navigateByUrl("")
   }
+  else{
+    alert("already existing customer...please login !!!")
+  }
+  
+ }
+ else{
+  alert("invalid user")
+}
+
+  }
+
 
 }
