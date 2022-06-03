@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { DataService } from '../services/data.service';
 
 @Component({
@@ -10,20 +11,32 @@ export class DashboardComponent implements OnInit {
   acno=""
   pswd=""
   amount=""
+  //form group
+  depositForm=this.fb.group({
+    acno:['',[Validators.required,Validators.pattern('[0-9 ]*')]],
+    pswd:['',[Validators.required,Validators.pattern('[a-zA-Z0-9]*')]],
+  amount:['',[Validators.required,Validators.pattern('[0-9]')]]
+  })
 
 
   acno1=""
   pswd1=""
   amount1=""
+  //form group
+  withdrawForm=this.fb.group({
+    acno1:['',[Validators.required,Validators.pattern('[0-9 ]*')]],
+    pswd1:['',[Validators.required,Validators.pattern('[a-zA-Z0-9]*')]],
+  amount1:['',[Validators.required,Validators.pattern('[0-9]')]] 
+  })
 
-  constructor(private ds:DataService) { }
+  constructor(private ds:DataService,private fb:FormBuilder) { }
 
   ngOnInit(): void {
   }
   deposit(){
-    var acno=this.acno
-    var pswd=this.pswd
-    var amount=this.amount
+    var acno=this.depositForm.value.acno
+    var pswd=this.depositForm.value.pswd
+    var amount=this.depositForm.value.amount
     const result =this.ds.deposit(acno,pswd,amount)
     
     if(result){
@@ -32,9 +45,9 @@ export class DashboardComponent implements OnInit {
 
   }
   withdraw(){
-    var acno=this.acno1
-    var pswd=this.pswd1
-    var amount=this.amount1
+    var acno=this.withdrawForm.value.acno1
+    var pswd=this.withdrawForm.value.pswd1
+    var amount=this.withdrawForm.value.amount1
     const result =this.ds.withdraw(acno,pswd,amount)
     
     if(result){
