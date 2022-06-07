@@ -1,18 +1,44 @@
 import { Injectable } from '@angular/core';
-import { ArgumentOutOfRangeError } from 'rxjs';
+// /import { ArgumentOutOfRangeError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+
+  currentUser:any
   db :any= {
-    1000:{"acno":1000,"username":"sreekanth","password":1000,"balance":5000},
-    1001:{"acno":1001,"username":"aswin","password":1000,"balance":3000},
-    1002:{"acno":1002,"username":"ajeesh","password":1000,"balance":2000},
+    1000:{"acno":1000,"username":"sreekanth","password":1000,"balance":5000,transaction:[]},
+    1001:{"acno":1001,"username":"aswin","password":1000,"balance":3000,transaction:[]},
+    1002:{"acno":1002,"username":"ajesh","password":1000,"balance":2000,transaction:[]},
 
   }
 
-  constructor() { }
+  constructor() {
+   this.getDetails()
+   }
+
+  //get details from local storge
+  getDetails(){
+    if(localStorage.getItem("database")){
+      this.db=JSON.parse(localStorage.getItem("database")|| '')
+    }
+    if(localStorage.getItem("currentuser")){
+      this.currentUser=JSON.parse(localStorage.getItem("currentuser")|| '')
+    }
+  }
+
+//save details()
+saveDetails(){
+  if (this.db){
+    localStorage.setItem("database",JSON.stringify(this.db))
+
+  }if(this.currentUser){
+  localStorage.setItem("currentuser",JSON.stringify(this.currentUser))
+  }
+}
+  
+
 
   login(acno:any,pswd:any){
     
@@ -21,6 +47,8 @@ export class DataService {
   
     if(acno in db ){
       if(pswd == db[acno]["password"]){
+        this.currentUser=db[acno]["username"]
+        this.saveDetails()
         return true
       }
       else{
@@ -46,8 +74,10 @@ register(username:any,acno:any,password:any){
       acno,
       username
       ,password,
-      "balance":0
+      "balance":0,
+      transaction:[]
     }
+    this.saveDetails()
     return true
   }
 }
@@ -57,6 +87,11 @@ deposit(acno:any,password:any,amt:any){
   if(acno in db){
     if(password==db[acno]["password"]){
       db[acno]["balance"]+=amount
+      db[acno].transaction.push({
+        type:"CREDIT",
+        amount:amount
+      })
+      this.saveDetails()
       return db[acno]["balance"]
     }
     else{
@@ -79,6 +114,11 @@ withdraw(acno:any,password:any,amt:any){
       if( db[acno]["balance"]>amount){
 
       db[acno]["balance"]-=amount
+      db[acno].transaction.push({
+        type:"DEBIT",
+        amount:amount
+      })
+      this.saveDetails()
       return db[acno]["balance"]
     }
     else{
