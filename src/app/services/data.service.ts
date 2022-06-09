@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// /import { ArgumentOutOfRangeError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class DataService {
 
   currentUser:any
+  currentAcno:any
   db :any= {
     1000:{"acno":1000,"username":"sreekanth","password":1000,"balance":5000,transaction:[]},
     1001:{"acno":1001,"username":"aswin","password":1000,"balance":3000,transaction:[]},
@@ -25,7 +25,12 @@ export class DataService {
     }
     if(localStorage.getItem("currentuser")){
       this.currentUser=JSON.parse(localStorage.getItem("currentuser")|| '')
+
     }
+    if(localStorage.getItem("currentAcno")){
+      this.currentAcno=JSON.parse(localStorage.getItem("currentAcno")|| '')
+    }
+
   }
 
 //save details()
@@ -35,6 +40,9 @@ saveDetails(){
 
   }if(this.currentUser){
   localStorage.setItem("currentuser",JSON.stringify(this.currentUser))
+  }
+if(this.currentAcno){
+  localStorage.setItem("currentAcno",JSON.stringify(this.currentAcno))
   }
 }
   
@@ -48,6 +56,7 @@ saveDetails(){
     if(acno in db ){
       if(pswd == db[acno]["password"]){
         this.currentUser=db[acno]["username"]
+        this.currentAcno=acno
         this.saveDetails()
         return true
       }
@@ -137,5 +146,9 @@ else{
   alert("user doesnot exist")
   return false
 }
+}
+getTransaction(acno:any){
+  return this.db[acno].transaction
+
 }
 }
