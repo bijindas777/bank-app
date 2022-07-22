@@ -27,12 +27,12 @@ user:any
 lDate:any
 acno=""
   constructor(private ds:DataService,private fb:FormBuilder,private router:Router) {
-    this.user =this.ds.currentUser
+    this.user = localStorage.getItem("currentUser")
     this.lDate=new Date()
    }
    
   ngOnInit(): void {
-    if(!localStorage.getItem("currentAcno")){
+    if(!localStorage.getItem("token")){
       alert("please login")
       this.router.navigateByUrl("")
     }
@@ -45,9 +45,15 @@ acno=""
     if(this.depositForm.valid){
 
     const result =this.ds.deposit(acno,pswd,amount)
+    .subscribe((result:any)=>{
       if(result){
-        alert(amount+"deposited succesfully and new balance is:"+result)
+        alert(result.message)
       }
+    },
+    result=>{
+      alert(result.error.message)
+    }
+    )
   
     }
     else{
@@ -62,11 +68,17 @@ acno=""
 
     if(this.withdrawForm.valid){
 
-    const result =this.ds.withdraw(acno,pswd,amount)
+    this.ds.withdraw(acno,pswd,amount)
+    .subscribe((result:any)=>{
+      alert(result.message)
+    },
+    result=>{
+      alert(result.error.message)
+    })
 
-      if(result){
-        alert(amount+"debited succesfully and new balance is:"+result)
-      }
+      // if(result){
+      //   alert(amount+"debited succesfully and new balance is:"+result)
+      // }
   
   
     }else{
@@ -78,6 +90,8 @@ acno=""
   logout(){
     localStorage.removeItem("currentUser")
     localStorage.removeItem("currentAcno")
+    localStorage.removeItem("token")
+
 
     this.router.navigateByUrl("")
 
@@ -88,6 +102,27 @@ acno=""
   cancel(){
     this.acno=""
 
+  }
+  onDelete(event:any){
+    this.ds.deleteAcc(event)
+    .subscribe((result:any)=>{
+      if(result){
+        alert(result.message)
+        localStorage.removeItem("currentUser")
+    localStorage.removeItem("currentAcno")
+    localStorage.removeItem("token")
+    
+    this.router.navigateByUrl("")
+
+
+      }
+
+    },
+    result=>{
+      alert(result.error.message)
+
+    })
+    
   }
 
 }

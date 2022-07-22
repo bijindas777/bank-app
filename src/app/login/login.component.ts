@@ -32,15 +32,34 @@ login(){
   var acno = this.loginForm.value.acno
   var pswd = this.loginForm.value.pswd
   
+if(this.loginForm.valid){
+  //asynchronus
+  this.ds.login(acno,pswd)
+  .subscribe((result:any)=>{
+if(result){
+  localStorage.setItem('currentUser',result.currentUser)
+  localStorage.setItem('currentAcno',result.currentAcno)
+  localStorage.setItem('token',result.token)
 
-   const result= this.ds.login(acno,pswd)
+  alert(result.message)
+  this.router.navigateByUrl('dashboard')
 
-  if(result ){
-      alert("login successfully")
-      this.router.navigateByUrl('dashboard')
-    }
+
+}
+
+  },result=>{
+    alert(result.error.message)
+  })
+
+
+}
+
+//   if(result ){
+//       alert("login successfully")
+//       this.router.navigateByUrl('dashboard')
+//     }
    
-  }
+//   }
   
 }
 
@@ -63,5 +82,5 @@ login(){
   //   else{
   //     alert("user does not exist")
   //   }
-  // }
+  }
 
